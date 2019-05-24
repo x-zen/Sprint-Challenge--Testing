@@ -1,14 +1,10 @@
-/*
-- when making a GET to the `/` endpoint
-  the API should respond with status code 200
-  and the following JSON object: `{ api: 'running' }`.
-*/
+
 const request = require('supertest');
-const server = require('./server.js'); // this is our first red, file doesn't exist yet
+const server = require('./server.js');
 
 describe('server.js', () => {
 
-  describe('index route', () => {
+  describe('GET / (index route)', () => {
     it('should return an OK status code from the index route', async () => {
       const expectedStatusCode = 200;
       const response = await request(server).get('/');
@@ -30,4 +26,51 @@ describe('server.js', () => {
     });
   });
 
+  describe('POST /games', () => {
+    it('Should throw a err(422) if handed a bad schema', async () => {
+      const badSchema = {title: "Some Indie Game"};
+
+      const response = await request(server).post('/games').send(badSchema);
+
+      expect(response.status).toEqual(422);
+    })
+
+    it('Should return ok(200) if passed a good schema', async () => {
+      const goodSchema = { title: "Web Dev Simulator", genre: "Simulation", releaseYear: "2018" };
+
+      const response = await request(server).post('/games').send(goodSchema);
+
+      expect(response.status).toEqual(200);
+    })
+
+    it('Should allow releaseYear to be optional', async () => {
+      const optionalSchema = { title: "This Game Sucks", genre: "Something" };
+
+      const response = await request(server).post('/games').send(optionalSchema);
+
+      expect(response.type).toEqual('application/json');
+    })
+
+    it('Should respond with an array', async () => {
+      const testSchema = { title: "The Zombies", genre: "Shooter" };
+
+      const response = await request(server).post('/games').send(testSchema);
+
+      expect(response.type).toEqual('application/json');
+    })
+  });
+
+  describe('GET /games', () => {
+    it('Should return ok(200) on GET', async () => {
+
+    })
+
+    it('Should respond with an array', async () => {
+
+    })
+
+    it('Should return the list of games', async () => {
+
+    })
+  });
 });
