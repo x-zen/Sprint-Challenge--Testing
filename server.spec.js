@@ -1,8 +1,19 @@
 
 const request = require('supertest');
 const server = require('./server.js');
+const knexConfig = require('./knexfile.js');
+const db = require('knex')(knexConfig.development);
 
 describe('server.js', () => {
+
+  beforeAll(async () => {
+    await db('games').truncate();
+  });
+
+  afterEach(async () => {
+    await db('games').truncate();
+  });
+
 
   describe('GET / (index route)', () => {
     it('should return an OK status code from the index route', async () => {
@@ -62,15 +73,21 @@ describe('server.js', () => {
 
   describe('GET /games', () => {
     it('Should return ok(200) on GET', async () => {
+      const response = await request(server).get('/games');
 
+      expect(response.status).toEqual(200);
     })
 
     it('Should respond with an array', async () => {
+      const response = await request(server).get('/games');
 
+      expect(response.type).toEqual('application/json');
     })
 
     it('Should return the list of games', async () => {
+      const response = await request(server).get('/games');
 
+      expect(response.body).toEqual(expect.any(Array));
     })
   });
 });

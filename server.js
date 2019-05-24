@@ -29,4 +29,16 @@ server.post('/games', async (req,res) => {
   };
 });
 
+server.get('/games', async (req,res) => {
+
+  try {
+    const gamesList = await db('games').select('*');
+
+    console.log(gamesList);
+    res.status(200).json(gamesList);
+  } catch(error) {
+   console.log(error);
+  }
+});
+
 module.exports = server;
